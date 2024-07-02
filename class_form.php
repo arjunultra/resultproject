@@ -30,6 +30,7 @@ if ($update_id) {
         $row = mysqli_fetch_assoc($result);
         $update_class_name = $row['class_name'];
         $update_subject_name = $row['subject_name'];
+        $subjectName = $update_subject_name;
     }
 }
 
@@ -132,7 +133,7 @@ if (mysqli_num_rows($resultSubjects) > 0) {
         </div>
         <br>
         <input class="btn btn-primary" type="submit" value="Submit">
-        <a class="btn btn-dark" href="subjects_table.php">Go to Table</a>
+        <a class="btn btn-dark" href="class_table.php">Go to Table</a>
         <br><br>
         <span class="error"><?php echo $duplicateEntryError; ?></span>
     </form>

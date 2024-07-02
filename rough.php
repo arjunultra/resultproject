@@ -30,6 +30,7 @@ if ($update_id) {
         $row = mysqli_fetch_assoc($result);
         $update_class_name = $row['class_name'];
         $update_subject_name = $row['subject_name'];
+        $subjectName = $update_subject_name;  // Set subjectName for the select element
     }
 }
 
@@ -53,8 +54,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if ($isValid) {
-        $className = $_POST['class_name'];
-        $subjectName = $_POST['subject_select'];
+        $className = mysqli_real_escape_string($conn, $_POST['class_name']);
+        $subjectName = mysqli_real_escape_string($conn, $_POST['subject_select']);
 
         if ($update_id) {
             // Update operation
@@ -96,7 +97,7 @@ $subjectOptions = "";
 
 if (mysqli_num_rows($resultSubjects) > 0) {
     while ($row = mysqli_fetch_assoc($resultSubjects)) {
-        $selected = ($row['subject_name'] === $update_subject_name || $row['subject_name'] === $subjectName) ? 'selected' : '';
+        $selected = ($row['subject_name'] === $subjectName) ? 'selected' : '';
         $subjectOptions .= "<option value='" . $row['subject_name'] . "' $selected>" . $row['subject_name'] . "</option>";
     }
 }

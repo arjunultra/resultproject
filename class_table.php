@@ -10,12 +10,9 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 if (!$conn) {
     die("Connection Failed:" . mysqli_connect_error());
 }
-// Getting Data from subjects table in resultsdb
-$sql = "SELECT * FROM subjects";
+// Getting Data from classes table in resultsdb
+$sql = "SELECT * FROM classes";
 $result = mysqli_query($conn, $sql);
-
-
-
 
 ?>
 
@@ -26,20 +23,20 @@ $result = mysqli_query($conn, $sql);
 
 <head>
     <meta charset="UTF-8">
-    <title>Subjects Form Data</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Class Form Data</title>
+    <link rel="stylesheet" href="CSS/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div class="container mt-5">
-        <h2>Subjects Form Data</h2>
+        <h2>Classes Form Data</h2>
         <div class="table-responsive">
             <table class="table table-striped table-hover table-bordered">
                 <thead class="table-dark bg-primary">
                     <tr>
                         <th>ID</th>
-                        <th>Subject Code</th>
+                        <th>Class Name</th>
                         <th>Subject Name</th>
                         <th class="text-center">Function</th>
                     </tr>
@@ -54,12 +51,12 @@ $result = mysqli_query($conn, $sql);
                         foreach ($allRows as $row) { ?>
                             <tr>
                                 <td><?php echo $row["id"] ?></td>
-                                <td><?php echo $row["subject_code"] ?></td>
+                                <td><?php echo $row["class_name"] ?></td>
                                 <td><?php echo $row["subject_name"] ?></td>
                                 <td class='d-flex'> <a target="_blank" class="btn btn-outline-primary w-50 me-2"
-                                        href="subjects_form.php?update_id=<?php echo $row['id']; ?>">UPDATE</a>
+                                        href="class_form.php?update_id=<?php echo $row['id']; ?>">UPDATE</a>
                                     <a class="btn btn-danger w-50"
-                                        href="subjects_table.php?delete_id=<?php echo $row['id']; ?>">DELETE</a>
+                                        href="class_table.php?delete_id=<?php echo $row['id']; ?>">DELETE</a>
                                 </td>
                             </tr>
                         <?php }
@@ -73,7 +70,7 @@ $result = mysqli_query($conn, $sql);
             // Delete functionality
             if (isset($_GET['delete_id']) && !empty($_GET['delete_id'])) {
                 $delete_id = $_GET['delete_id'];
-                $sql = "DELETE FROM subjects WHERE id=$delete_id";
+                $sql = "DELETE FROM classes WHERE id=$delete_id";
                 if (mysqli_query($conn, $sql)) {
                     echo ("<h5 class='d-inline-block p-2 text-center text-danger fw-bold border border-danger'>Record Deleted Successfully</h2>");
                 } else {
