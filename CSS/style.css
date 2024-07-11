@@ -36,6 +36,11 @@ body {
   color: var(--color-white);
   margin: 0;
 }
+.container-xs {
+  width: 40em;
+  max-width: 50%;
+  margin: 0 auto;
+}
 div#submit-msg {
   background-color: var(--color-purple);
   color: var(--color-green);
@@ -44,10 +49,6 @@ div#submit-msg {
   padding: 2em;
   margin: 1em 0;
   text-align: center;
-}
-tbody > tr > td {
-  width: 12em;
-  height: 7em;
 }
 
 /* mobile friendly alternative to using background-attachment: fixed */

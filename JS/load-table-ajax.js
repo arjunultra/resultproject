@@ -3,7 +3,8 @@ function loadContent(url, containerId) {
     url: url,
     success: function (result) {
       if (result != "") {
-        var container = $("#" + containerId);
+        console.log(result);
+        var container = $(containerId);
         if (container.find("tr").length > 0) {
           container.find("tr:first").before(result);
         } else {

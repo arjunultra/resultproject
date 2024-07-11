@@ -32,6 +32,14 @@ $result = mysqli_query($conn, $sql);
 </head>
 
 <body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-2"></div>
+        </div>
+    </div>
+    <header>
+        <?php include_once ('sidebar.php') ?>
+    </header>
     <div class="container mt-5">
         <h2>Subjects Form Data</h2>
         <div class="table-responsive">

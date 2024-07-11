@@ -29,6 +29,7 @@ $result = mysqli_query($conn, $sql);
 </head>
 
 <body>
+    <?php include_once ('sidebar.php') ?>
     <div class="container mt-5">
         <h2>Classes Form Data</h2>
         <div class="table-responsive">
@@ -72,7 +73,7 @@ $result = mysqli_query($conn, $sql);
                 $delete_id = $_GET['delete_id'];
                 $sql = "DELETE FROM classes WHERE id=$delete_id";
                 if (mysqli_query($conn, $sql)) {
-                    echo ("<h5 class='d-inline-block p-2 text-center text-danger fw-bold border border-danger'>Record Deleted Successfully</h2>");
+                    echo "<h5 class='d-inline-block p-2 text-center text-danger fw-bold border border-danger'>Record Deleted Successfully</h2>";
                 } else {
                     echo "Error deleting record: " . mysqli_error($conn);
                 }
@@ -80,12 +81,6 @@ $result = mysqli_query($conn, $sql);
             ?>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-        crossorigin="anonymous"></script>
     <?php
     mysqli_close($conn);
     ?>

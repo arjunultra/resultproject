@@ -3,7 +3,7 @@ function fetchAndDisplay(url, containerId) {
     url: url,
     success: function (result) {
       if (result != "" && $(containerId).length > 0) {
-        $(containerId).html(result);
+        $(containerId).val(result);
       }
     },
   });

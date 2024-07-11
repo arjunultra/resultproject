@@ -56,8 +56,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($isValid) {
         $className = mysqli_real_escape_string($conn, $_POST['class_name']);
         $subjectName = mysqli_real_escape_string($conn, $_POST['subject_select']);
-
-        if ($update_id) {
+        // Check for duplicates before update
+        $checkDuplicate = "SELECT * FROM classes WHERE class_name='$className' AND subject_name='$subjectName'";
+        $duplicateResult = mysqli_query($conn, $checkDuplicate);
+        if ((mysqli_num_rows($duplicateResult) > 0)) {
+            $duplicateEntryError = "This class and subject combination already exists.";
+        } elseif ($update_id) {
             // Update operation
             $sqlUpdate = "UPDATE classes SET class_name='$className', subject_name='$subjectName' WHERE id='$update_id'";
             if (mysqli_query($conn, $sqlUpdate)) {
@@ -97,7 +101,7 @@ $subjectOptions = "";
 
 if (mysqli_num_rows($resultSubjects) > 0) {
     while ($row = mysqli_fetch_assoc($resultSubjects)) {
-        $selected = ($row['subject_name'] === $subjectName) ? 'selected' : '';
+        $selected = ($row['subject_name'] == $subjectName) ? 'selected' : '';
         $subjectOptions .= "<option value='" . $row['subject_name'] . "' $selected>" . $row['subject_name'] . "</option>";
     }
 }
@@ -115,6 +119,7 @@ if (mysqli_num_rows($resultSubjects) > 0) {
 </head>
 
 <body>
+    <?php include_once ('sidebar.php') ?>
     <h1 class="main-title text-center">Enter Your Class</h1>
     <form method="POST" class="form w-100 text-center" action="<?php echo $_SERVER["PHP_SELF"]; ?>">
         <input type="hidden" name="update_id" value="<?= $update_id ?>">

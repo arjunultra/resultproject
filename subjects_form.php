@@ -114,6 +114,7 @@ if (mysqli_num_rows($resultSubjects) > 0) {
 </head>
 
 <body>
+    <?php include_once ('sidebar.php') ?>
     <h1 class="main-title text-center">Enter Your Class</h1>
     <form method="POST" class="form w-100 text-center" action="<?php echo $_SERVER["PHP_SELF"]; ?>">
         <input type="hidden" name="update_id" value="<?= $update_id ?>">
