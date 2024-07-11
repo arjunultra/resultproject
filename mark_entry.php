@@ -45,7 +45,7 @@ $tableSql = "CREATE TABLE IF NOT EXISTS markentry (
     student_rollno VARCHAR(255) NOT NULL,
     student_class VARCHAR(255) NOT NULL,
     subject_name VARCHAR(255) NOT NULL,
-    student_marks VARCHAR(255)
+    student_marks VARCHAR(255),result_declared VARCHAR(255) NOT NULL
 )";
 if (!mysqli_query($conn, $tableSql)) {
     echo "Error creating table: " . mysqli_error($conn);
@@ -59,7 +59,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $student_class = isset($_POST['student_class']) ? $_POST['student_class'] : "";
     $subject_name = isset($_POST['subject_name']) ? $_POST['subject_name'] : "";
     $student_marks = isset($_POST['mark_obtained']) ? $_POST['mark_obtained'] : "";
-    print_r($subject_name) . "hi";
 
     // Regex patterns
     $namePattern = "/^[a-zA-Z ]*$/";
@@ -70,6 +69,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($student_name) || !preg_match($namePattern, $student_name)) {
         $studentNameError = "Invalid name";
         $isValid = false;
+    } else {
+
     }
     if (empty($student_rollno) || !preg_match($numberPattern, $student_rollno)) {
         $studentRollnoError = "Invalid roll number";
@@ -120,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                           student_rollno='$student_rollno', 
                           student_class='$student_class', 
                           subject_name='$subjectStrValue', 
-                          student_marks='$student_marks' 
+                          student_marks='$student_marks',result_declared='$resultStrValue' 
                           WHERE id='$update_id'";
             if (mysqli_query($conn, $updateSql)) {
                 echo "Record updated successfully.";
@@ -129,8 +130,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         } else {
             // Insert record
-            $insertSql = "INSERT INTO markentry (student_name, student_rollno, student_class, subject_name, student_marks) 
-                          VALUES ('$student_name', '$student_rollno', '$student_class', '$subjectStrValue', '$marksStrValue')";
+            $insertSql = "INSERT INTO markentry (student_name, student_rollno, student_class, subject_name, student_marks,result_declared) 
+                          VALUES ('$student_name', '$student_rollno', '$student_class', '$subjectStrValue', '$marksStrValue','$resultStrValue')";
             if (mysqli_query($conn, $insertSql)) {
                 echo "New record created successfully.";
             } else {
@@ -224,6 +225,7 @@ if (mysqli_num_rows($resultStudentSubjects) > 0) {
                 <h2 class="text-center shadow-lg box-shadow text-danger-emphasis">Student Marks Report</h2>
                 <div id="productTable" class="table-responsive">
                     <table id="marks-table" class="table table-striped table-hover table-bordered">
+                        <input id="row_count" type="hidden" name="row_count" value="0">
                         <thead class="table-dark bg-primary">
                             <tr>
                                 <th>S.No</th>
@@ -260,7 +262,11 @@ if (mysqli_num_rows($resultStudentSubjects) > 0) {
 
             // table ajax
             $("#add-btn").click(function () {
-                let rowIndex = 1;
+                if ($("#row_count").length > 0) {
+                    row_count = $("#row_count").val();
+                    rowIndex = parseInt(row_count) + 1;
+                    $("#row_count").val(rowIndex);
+                }
                 // console.log('button clicked');
                 let selectedSubject = "";
                 if ($("#subjects-select").length > 0) {
@@ -270,7 +276,22 @@ if (mysqli_num_rows($resultStudentSubjects) > 0) {
                 if ($("#student-marks").length > 0) {
                     markObtained = $("#student-marks").val();
                 }
-                let post_url = "mark_entry_changes.php?selected_subject=" + selectedSubject + "&mark_obtained=" + markObtained;
+                // Check if the subject already exists in the table
+                let subjectExists = false;
+                $("#table-body tr").each(function () {
+                    let subjectInTable = $(this).find("td:eq(1)").text().trim();
+                    if (subjectInTable == selectedSubject) {
+                        subjectExists = true;
+                        return false; // Break out of the loop similar to using break in a for loop
+                    }
+                });
+
+                // If subject already exists,
+                if (subjectExists) {
+                    alert("This subject has already been added.");
+                    return;
+                }
+                let post_url = "mark_entry_changes.php?selected_subject=" + selectedSubject + "&mark_obtained=" + markObtained + "&row_index=" + rowIndex;
                 loadContent(post_url, "#table-body");
             });
         </script>

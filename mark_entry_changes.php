@@ -29,23 +29,23 @@ if (isset($_GET['student_name'])) {
 if (isset($_REQUEST['selected_subject'])) {
     $subject_name = "";
     $mark_obtained = "";
-    // $row_index = 1;
-    // $row_index = $_REQUEST['row_index'];
+
+    $row_index = $_REQUEST['row_index'];
     $mark_obtained = $_REQUEST['mark_obtained'];
     $subject_name = $_REQUEST['selected_subject'];
     if (!empty($subject_name) && (!empty($mark_obtained))) { ?>
-        <tr>
-            <td></td>
+        <tr <?php echo $row_index; ?>>
+            <td><?= $row_index ?></td>
             <td><?php echo $subject_name ?>
                 <input type="hidden" name="subject_name[]" value="<?php echo $subject_name ?>">
             </td>
             <td><?php echo $mark_obtained ?>
                 <input type="hidden" name="mark_obtained[]" value="<?php echo $mark_obtained ?>">
             </td>
-
         </tr>
-    <?php //$row_index++;
-    }
+
+
+    <?php }
 
 }
 

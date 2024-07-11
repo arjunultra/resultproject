@@ -10,7 +10,10 @@ $userType = "";
 // Now, safely check if 'user_type' is in session and update userType accordingly
 if (isset($_SESSION['user_type'])) {
     $userType = $_SESSION['user_type'];
+    if ($userType == "Student") {
+    }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,9 +27,14 @@ if (isset($_SESSION['user_type'])) {
 </head>
 
 <body>
-    <button class="btn btn-primary mt-5 ms-5" type="button" data-bs-toggle="offcanvas"
-        data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Menu</button>
-
+    <?php
+    if ($userType == "Student") {
+        echo ('<button class="d-none btn btn-primary mt-5 ms-5" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Menu</button>');
+    } else if ($userType == "Admin") {
+        echo ('<button class="btn btn-primary mt-5 ms-5" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Menu</button>');
+    } ?>
     <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
         aria-labelledby="offcanvasWithBothOptionsLabel">
         <div class="offcanvas-header">

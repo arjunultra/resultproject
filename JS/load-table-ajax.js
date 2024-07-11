@@ -6,7 +6,7 @@ function loadContent(url, containerId) {
         console.log(result);
         var container = $(containerId);
         if (container.find("tr").length > 0) {
-          container.find("tr:first").before(result);
+          container.find("tr:last").after(result);
         } else {
           container.append(result);
         }
