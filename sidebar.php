@@ -3,6 +3,19 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "resultsdb";
+
+// Create connection
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+// Check Connection
+if (!$conn) {
+    die("Connection Failed:" . mysqli_connect_error());
+}
+$logged_user = "";
+$logged_user = $_SESSION['user_name'];
 
 // Initialize userType with a default value
 $userType = "";
@@ -13,7 +26,15 @@ if (isset($_SESSION['user_type'])) {
     if ($userType == "Student") {
     }
 }
+$resultdisplayquery = "SELECT * FROM markentry WHERE student_name = '$logged_user'";
+$result = mysqli_query($conn, $resultdisplayquery);
 
+if ($result) {
+    $studentResult = mysqli_fetch_assoc($result);
+    // echo '<pre>' . print_r($studentResult, true) . '</pre>';
+} else {
+    echo "Error: " . mysqli_error($conn);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,6 +52,7 @@ if (isset($_SESSION['user_type'])) {
     if ($userType == "Student") {
         echo ('<button class="d-none btn btn-primary mt-5 ms-5" type="button" data-bs-toggle="offcanvas"
         data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Menu</button>');
+
     } else if ($userType == "Admin") {
         echo ('<button class="btn btn-primary mt-5 ms-5" type="button" data-bs-toggle="offcanvas"
         data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">Menu</button>');

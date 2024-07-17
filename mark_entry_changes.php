@@ -12,17 +12,30 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 if (isset($_GET['student_name'])) {
+    $id = "";
     $studentName = $_REQUEST['student_name'];
-    $query = "SELECT student_rollno, student_class FROM studentadmission WHERE student_name = '$studentName'";
-    $result = mysqli_query($conn, $query);
-
-    if ($result) {
-        $row = mysqli_fetch_assoc($result);
-        if ($row) {
-            echo $row['student_rollno'] . ',' . $row['student_class'];
-        } else {
-            echo ",";
+    $errorQuery = "SELECT id FROM markentry WHERE student_name ='$studentName'";
+    $errorResult = mysqli_query($conn, $errorQuery);
+    if (!empty($errorResult)) {
+        foreach ($errorResult as $result) {
+            $id = $result['id'];
         }
+    }
+    if (empty($id)) {
+
+        $query = "SELECT student_rollno, student_class FROM studentadmission WHERE student_name = '$studentName'";
+        $result = mysqli_query($conn, $query);
+
+        if ($result) {
+            $row = mysqli_fetch_assoc($result);
+            if ($row) {
+                echo $row['student_rollno'] . ',' . $row['student_class'];
+            } else {
+                echo ",";
+            }
+        }
+    } else {
+        echo "<p class='text-bg-danger'>Result Already Declared</p>";
     }
 }
 // Table Ajax

@@ -16,7 +16,8 @@ $student_name = $student_rollno = $student_class = "";
 $subject_name = $student_marks = [];
 
 // Error handling variables
-$studentNameError = $studentRollnoError = $studentClassError = $subjectNameError = $studentmarksError = $duplicateEntryError = "";
+$studentNameError = $studentRollnoError = $studentClassError = $subjectNameError = $studentmarksError = $duplicateEntryError = $errorResult = "";
+
 
 // Update operation variables
 $update_id = isset($_REQUEST['update_id']) ? $_REQUEST['update_id'] : "";
@@ -179,8 +180,8 @@ if (mysqli_num_rows($resultStudentSubjects) > 0) {
     <?php include_once ('sidebar.php') ?>
     <h1 class="main-title text-center">Students Mark Entry</h1>
     <div class="container-sm">
-        <form method="POST" class="form w-100 text-center"
-            action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <form id="markentry-form" method="POST" class="form w-100 text-center"
+            action="<?php echo $_SERVER["PHP_SELF"]; ?>">
             <input type="hidden" name="update_id" value="<?php echo $update_id; ?>">
             <div class="form-group">
                 <label for="student-name">Student Name:</label>
@@ -239,7 +240,7 @@ if (mysqli_num_rows($resultStudentSubjects) > 0) {
                 </div>
             </div>
             <input class="btn btn-danger" type="submit" value="Submit">
-            <a class="btn btn-outline-dark ms-3" href="./admission_table.php">Go to Table</a>
+            <a class="btn btn-outline-dark ms-3" href="./markentry_table.php">Go to Table</a>
         </form>
         <!-- table -->
 
@@ -252,9 +253,15 @@ if (mysqli_num_rows($resultStudentSubjects) > 0) {
                     url: post_url,
                     success: function (result) {
                         if (result) {
-                            let [student_rollno, student_class] = result.split(',');
-                            $("#student-rollno").val(student_rollno);
-                            $("#student-class").val(student_class);
+                            // alert(result.indexOf("Result"))
+                            if ((result.indexOf('Result'))
+                                != -1) {
+                                $('#markentry-form').before(alert("Results Already Declared"));
+                            } else {
+                                let [student_rollno, student_class] = result.split(',');
+                                $("#student-rollno").val(student_rollno);
+                                $("#student-class").val(student_class);
+                            }
                         }
                     },
                 });
@@ -289,7 +296,7 @@ if (mysqli_num_rows($resultStudentSubjects) > 0) {
                 // If subject already exists,
                 if (subjectExists) {
                     alert("This subject has already been added.");
-                    return;
+                    return
                 }
                 let post_url = "mark_entry_changes.php?selected_subject=" + selectedSubject + "&mark_obtained=" + markObtained + "&row_index=" + rowIndex;
                 loadContent(post_url, "#table-body");
