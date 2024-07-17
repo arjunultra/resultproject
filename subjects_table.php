@@ -1,3 +1,4 @@
+<?php include_once ('sidebar.php') ?>
 <?php
 $servername = "localhost";
 $username = "root";
@@ -10,7 +11,7 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 if (!$conn) {
     die("Connection Failed:" . mysqli_connect_error());
 }
-// Getting Data from subjects table in resultsdb
+// Getting Data from subjects table in srisw
 $sql = "SELECT * FROM subjects";
 $result = mysqli_query($conn, $sql);
 
@@ -27,21 +28,13 @@ $result = mysqli_query($conn, $sql);
 <head>
     <meta charset="UTF-8">
     <title>Subjects Form Data</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="./CSS/bootstrap.min.css">
+    <link rel="stylesheet" href="./CSS/style.css">
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-2"></div>
-        </div>
-    </div>
-    <header>
-        <?php include_once ('sidebar.php') ?>
-    </header>
     <div class="container mt-5">
-        <h2>Subjects Form Data</h2>
+        <h2 class="main-title text-center">Subjects Form Data</h2>
         <div class="table-responsive">
             <table class="table table-striped table-hover table-bordered">
                 <thead class="table-dark bg-primary">

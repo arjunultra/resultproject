@@ -6,136 +6,110 @@ $dbname = "resultsdb";
 
 // Create connection
 $conn = mysqli_connect($servername, $username, $password, $dbname);
-
 // Check connection
 if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+    die("Connection
+    failed: " . mysqli_connect_error());
 }
+// update functionality
+$update_id = "";
+$edit_subject_code = "";
+$edit_subject_name = "";
 
-$subjectName = isset($_POST["subject_select"]) ? $_POST["subject_select"] : "";
-$className = isset($_POST["class_name"]) ? $_POST["class_name"] : "";
-
-// Error Handling
-$classNameError = $subjectNameError = $duplicateEntryError = "";
-
-// Fetch class data for update if update_id is set
-$update_id = isset($_REQUEST['update_id']) ? $_REQUEST['update_id'] : "";
-$update_class_name = "";
-$update_subject_name = "";
-
-if ($update_id) {
-    $query = "SELECT * FROM classes WHERE id='$update_id'";
-    $result = mysqli_query($conn, $query);
+if (isset($_REQUEST['update_id'])) {
+    $update_id = $_REQUEST['update_id'];
+    $query = " SELECT * FROM subjects WHERE id='" . $update_id . "'";
+    $result = $conn->query($query);
     if ($result) {
-        $row = mysqli_fetch_assoc($result);
-        $update_class_name = $row['class_name'];
-        $update_subject_name = $row['subject_name'];
-    }
-}
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $isValid = true;
-
-    // Sanitize and validate class name
-    if (empty($_POST['class_name'])) {
-        $classNameError = "Class name cannot be empty.";
-        $isValid = false;
-    } else if (!preg_match("/^[0-9 \-_]+$/", $className)) {
-        $classNameError = "Class name contains invalid characters.";
-        $isValid = false;
-    }
-
-    if (empty($_POST['subject_select'])) {
-        $subjectNameError = "Subject name cannot be empty!";
-        $isValid = false;
-    } else {
-        $subjectName = $_POST['subject_select'];
-    }
-
-    if ($isValid) {
-        $className = $_POST['class_name'];
-        $subjectName = $_POST['subject_select'];
-
-        if ($update_id) {
-            // Update operation
-            $sqlUpdate = "UPDATE classes SET class_name='$className', subject_name='$subjectName' WHERE id='$update_id'";
-            if (mysqli_query($conn, $sqlUpdate)) {
-                echo "<script>alert('Record updated successfully.');</script>";
-            } else {
-                echo "Error: " . $sqlUpdate . "<br>" . mysqli_error($conn);
-            }
-        } else {
-            // Check for duplicates before insert
-            $checkDuplicate = "SELECT * FROM classes WHERE class_name='$className' AND subject_name='$subjectName'";
-            $duplicateResult = mysqli_query($conn, $checkDuplicate);
-
-            if (mysqli_num_rows($duplicateResult) > 0) {
-                $duplicateEntryError = "This class and subject combination already exists.";
-            } else {
-                // Insert operation
-                $sqlInsert = "INSERT INTO classes (class_name, subject_name) VALUES ('$className', '$subjectName')";
-                if (mysqli_query($conn, $sqlInsert)) {
-                    echo "<script>
-                            alert('New record created successfully.');
-                            setTimeout(function() {
-                                window.location.href = 'class_form.php';
-                            }, 3000);
-                          </script>";
-                } else {
-                    echo "Error: " . $sqlInsert . "<br>" . mysqli_error($conn);
-                }
-            }
+        foreach ($result as $row) {
+            $update_id = $row['id'];
+            $edit_subject_code = $row['subject_code'];
+            $edit_subject_name = $row['subject_name'];
         }
     }
 }
 
-// Fetch subjects data from subjects table
-$sqlSubjects = "SELECT * FROM subjects";
-$resultSubjects = mysqli_query($conn, $sqlSubjects);
-$subjectOptions = "";
-
-if (mysqli_num_rows($resultSubjects) > 0) {
-    while ($row = mysqli_fetch_assoc($resultSubjects)) {
-        $selected = ($row['subject_name'] === $update_subject_name || $row['subject_name'] === $subjectName) ? 'selected' : '';
-        $subjectOptions .= "<option value='" . $row['subject_name'] . "' $selected>" . $row['subject_name'] . "</option>";
+// Create subjects table if not exists
+$sqlCreateSubjects = " CREATE TABLE IF NOT EXISTS subjects ( id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY, subject_code
+    VARCHAR(255) NOT NULL,subject_name VARCHAR(255) NOT NULL )";
+if (mysqli_query($conn, $sqlCreateSubjects)) { // Check if the table was actually created or it already existed 
+    if (mysqli_affected_rows($conn) > 0) {
+        echo "Subjects table created successfully.<br>";
     }
+} else {
+    echo "Error creating subjects table: " . mysqli_error($conn);
 }
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Class Form</title>
+    <title>Subject Entry Form</title>
+    <!-- Bootstrap CDN -->
     <link rel="stylesheet" href="./CSS/bootstrap.min.css">
     <link rel="stylesheet" href="./CSS/style.css">
 </head>
 
 <body>
     <?php include_once ('sidebar.php') ?>
-    <h1 class="main-title text-center">Enter Your Class</h1>
+    <h1 class="main-title text-center">Enter Your Subjects</h1>
     <form method="POST" class="form w-100 text-center" action="<?php echo $_SERVER["PHP_SELF"]; ?>">
         <input type="hidden" name="update_id" value="<?= $update_id ?>">
         <div class="form-group">
-            <label for="class-name">Class Name:</label>
-            <input value="<?php echo isset($_POST['class_name']) ? $_POST['class_name'] : $update_class_name; ?>"
-                type="text" id="class-name" name="class_name" class="form-control">
-            <span class="error"><?php echo $classNameError; ?></span>
+            <label for="subject-code">Subject Code:</label>
+            <input
+                value="<?php echo isset($_POST['subject_code']) ? $_POST['subject_code'] : (isset($edit_subject_code) ? $edit_subject_code : ''); ?>"
+                type="text" id="subject-code" name="subject_code" class="form-control">
+            <label for="subject-name">Subject Name:</label>
+            <input
+                value="<?php echo isset($_POST['subject_name']) ? $_POST['subject_name'] : (isset($edit_subject_name) ? $edit_subject_name : ''); ?>"
+                type="text" id="subject-name" name="subject_name" class="form-control">
+            <div class="subjectname-error">
+                <?php
+                // Assuming you're submitting data to this same PHP script
+                if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['subject_code'])) {
 
-            <label for="subject-select">Subject Name:</label>
-            <select name="subject_select" id="subject-select" class="form-control">
-                <option value="">Select a Subject</option>
-                <?= $subjectOptions ?>
-            </select>
-            <span class="error"><?php echo $subjectNameError; ?></span>
+                    $subjectCode = $_POST['subject_code'];
+                    $subjectName = $_POST['subject_name'];
+
+                    if (empty($subjectName) && empty($subjectCode)) {
+                        echo "<div class='mt-5 alert alert-danger' role='alert'>Subject name and subject code cannot be empty!</div>";
+                    } else if (preg_match('/\d/', $subjectName) && preg_match('/^[a-zA-Z0-9]+$/', $subjectCode)) {
+                        echo "<div class='alert alert-danger mt-5' role='alert'>Please Enter a valid subject name and valid subject code</div>";
+                    } else {
+                        // Check if we are updating or inserting
+                        if (isset($_POST['update_id']) && !empty($_POST['update_id'])) {
+                            // Prepare an update statement
+                            $sqlUpdate = "UPDATE subjects SET subject_code = '$subjectCode' ,subject_name = '$subjectName' WHERE id = $update_id";
+
+
+                            if (mysqli_query($conn, $sqlUpdate)) {
+                                echo "<p class='text-bg-success p-2 mt-4'>Record updated successfully.</p><br>";
+                            } else {
+                                echo "Error: " . $sqlUpdate . "<br>" . mysqli_error($conn);
+                            }
+                        } else {
+                            // Prepare an insert statement
+                            $sqlInsert = "INSERT INTO subjects (subject_code,subject_name) VALUES ('$subjectCode','$subjectName')";
+
+                            if (mysqli_query($conn, $sqlInsert)) {
+                                echo "<p class='text-bg-success p-2 mt-4'>New record created successfully.</p><br>";
+                            } else {
+                                echo "Error: " . $sqlInsert . "<br>" . mysqli_error($conn);
+                            }
+                        }
+                    }
+                }
+
+                mysqli_close($conn);
+                ?>
+
+
+            </div>
         </div>
         <br>
         <input class="btn btn-primary" type="submit" value="Submit">
         <a class="btn btn-dark" href="subjects_table.php">Go to Table</a>
-        <br><br>
-        <span class="error"><?php echo $duplicateEntryError; ?></span>
     </form>
 </body>
 
